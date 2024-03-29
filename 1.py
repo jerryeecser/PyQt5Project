@@ -26,33 +26,20 @@ class MainWidget(QWidget):
         super().__init__()
         #设置标题
         self.setWindowTitle('QThread多线程例子')
-        self.resize(480, 480)
+
         #实例化多线程对象
         # self.thread1 = Worker()
 
         #实例化列表控件与按钮控件
         self.listFile = QListWidget()
-        self.btn = QPushButton('开始')
-        self.btnStart = QPushButton('第二次')
-        layout = QVBoxLayout()
+        self.btnStart = QPushButton('开始')
+
         self.label7 = QTextEdit(self)
+        self.label7.move(40, 550)
+        self.label7.resize(150, 100)
         self.label7.setText('hello nio')
-        layout.addWidget(self.label7)
-        layout.addWidget(self.btnStart)
-        layout.addWidget(self.btn)
-        layout.addWidget(self.listFile)
-        self.setLayout(layout)
+        print(self.label7.toPlainText())
 
-        self.btn.clicked.connect(self.firstcli)
-        self.btnStart.clicked.connect(self.second)
-        # print(self.label7.toPlainText())
-
-    def firstcli(self):
-        print('摁了一下')
-
-    def second(self):
-        self.btn.clicked.connect(self.firstcli)
-        print('又来')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
