@@ -5,7 +5,7 @@ import serial
 from PyQt5 import QtWidgets 
 from serial.tools import list_ports
 from PyQt5.QtWidgets import QWidget, QMessageBox, QHBoxLayout, QVBoxLayout, QFormLayout, QGroupBox, QLabel, QCheckBox, QComboBox, QLineEdit, QTextEdit, QPushButton
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, QThread, pyqtSignal
 
 #界面整体布局
 class basicsurf(QWidget):
@@ -16,10 +16,10 @@ class basicsurf(QWidget):
         self.TCPEND = True
         self.ser = serial.Serial()
         #右边四列的控件列表
-        self.V1label = []
-        self.V2label = []
-        self.V3label = []
-        self.V4label = []
+        self.V1label = [ ]
+        self.V2label = [ ]
+        self.V3label = [ ]
+        self.V4label = [ ]
         self.DataReceive = 0
         self.DataSended  = 0
         self.init_ui()
@@ -275,7 +275,7 @@ class basicsurf(QWidget):
             self.ser.stopbits = serial.STOPBITS_TWO
         
         try:
-            time.sleep(0.01) #等待10ms 打开串口
+            time.sleep(0.1) #等待10ms 打开串口
             self.ser.open() 
         except:
             QMessageBox.critical(self, "串口异常" , "不能被打开") #title, text
@@ -340,16 +340,17 @@ class basicsurf(QWidget):
         # try:
         BufferData = self.ser.in_waiting #缓冲区的数据
         if BufferData > 0:
-            time.sleep(0.1)
-            BufferData = self.ser.in_waiting #延时 消故障 再读一次buffer data
-            if BufferData > 0:
-                RealData = self.ser.read(BufferData) #读取数据
-                DataLength = len(RealData)
-                self.receive_area.append(RealData.decode('utf-8'))
-                self.DataReceive += DataLength
-                self.RXData.setText(str(self.DataReceive))
-            else:
-                pass
+            # time.sleep(0.1)
+            # BufferData = self.ser.in_waiting #延时 消故障 再读一次buffer data
+            # if BufferData > 0:
+            RealData = self.ser.read(BufferData) #读取数据
+            DataLength = len(RealData)
+            self.receive_area.append(RealData.decode('ascii'))
+
+            self.DataReceive += DataLength
+            self.RXData.setText(str(self.DataReceive))
+        else:
+            pass
         # except:
         #     QMessageBox.critical(self, "串口异常", "串口数据接收异常,请重新连接设备")
         #     self.PortClose()
@@ -386,7 +387,6 @@ class basicsurf(QWidget):
         
         self.OpenButton.setEnabled(True)
 
-
     def ClearReceive(self):
         self.receive_area.clear() #发送区清空
 
@@ -399,6 +399,30 @@ class basicsurf(QWidget):
             self.V2label[k-1].setStyleSheet("background-color: rgb(255, 255, 0)")
         for m in range(4, 11, 4):
             self.V2label[m-1].setStyleSheet("background-color: rgb(255, 0, 0)")
+
+#接收线程
+class receive_data(QThread):
+    DataDisplay = pyqtSignal(str)
+
+    def __init__(self,ser):
+        super().__init__()
+        self.ThreadSer = ser
+
+    def run(self):
+        while(True):
+            # BufferData = self.ThreadSer.in_waiting #缓冲区的数据
+            # if BufferData > 0:
+                # time.sleep(0.1)
+                # BufferData = self.ser.in_waiting #延时 消故障 再读一次buffer data
+                # if BufferData > 0:
+            RealData = self.ThreadSer.read() #读取数据
+            DataLength = len(RealData)
+                # self.bs.receive_area.append(RealData.decode('utf-8'))
+            print(f"数据为:{RealData.decode('utf-8')}")
+                # self.bs.DataReceive += DataLength
+                # self.bs.RXData.setText(str(self.bs.DataReceive))
+            # else:
+                # pass
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

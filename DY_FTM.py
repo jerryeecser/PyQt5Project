@@ -51,7 +51,17 @@ def sts_msg_callback(data: bytes):
 
     data = json.loads(QQW101)
     # print(data)
-    efuse_id = [item["efuseid"] for item in data["efusests"]]
+    '''
+    data["efusests"]结构:
+    [
+        {"efuseid": 1, "basicefusests": "OK", "efusesafetystatus": "Safe"},
+        {"efuseid": 2, "basicefusests": "Failed", "efusesafetystatus": "Unsafe"},
+        {"efuseid": 3, "basicefusests": "OK", "efusesafetystatus": "Safe"}
+    ]
+    efuse_id结构:
+    [1, 2, 3, ......]
+    '''
+    efuse_id = [item["efuseid"] for item in data["efusests"]] 
     EFUSE_STS = [item["basicefusests"] for item in data["efusests"]]
     efuse_safe = [item["efusesafetystatus"] for item in data["efusests"]]
     lege = len(efuse_id)
