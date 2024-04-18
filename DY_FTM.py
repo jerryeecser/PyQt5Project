@@ -34,14 +34,7 @@ else:
 
 # Subscribe ControlFL_BaiscEfuseSts_Msg
 sts_msg = ControlBasicEfuseSts()
-#sts_msg.efusests.add().efuseid=131328
-#sts_msg.efusests.add().efuseid=131329
-#sts_msg.efusests.add().efuseid=131330
-#sts_msg.efusests.add().efuseid=131331
-#sts_msg.efusests.add().efuseid=131332
-#sts_msg.efusests.add().efuseid=131333
-#sts_msg.efusests.add().efuseid=131334
-#sts_msg.efusests.add().efuseid=131335
+
 
 def sts_msg_callback(data: bytes):
     sts_msg.ParseFromString(data)
